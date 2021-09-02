@@ -1,5 +1,5 @@
 const CustomEvents = require('./customevents');
-const LiveReload = (window.LiveReload = new (require('./livereload').LiveReload)(window));
+const LiveReload = new (require('./livereload').LiveReload)();
 
 for (const k in window) {
   if (k.match(/^LiveReloadPlugin/)) {

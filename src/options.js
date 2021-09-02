@@ -34,45 +34,45 @@ class Options {
 }
 
 Options.extract = function (document) {
-  for (const element of Array.from(document.getElementsByTagName('script'))) {
-    // eslint-disable-next-line no-var
-    var m;
-    // eslint-disable-next-line no-var
-    var mm;
-    const src = element.src;
-    const srcAttr = element.getAttribute('src');
-    const lrUrlRegexp = /^([^:]+:\/\/([^/:]+)(?::(\d+))?\/|\/\/|\/)?([^/].*\/)?z?livereload\.js(?:\?(.*))?$/;
-    //                   ^proto:// ^host       ^port     ^//  ^/   ^folder
-    const lrUrlRegexpAttr = /^(?:(?:([^:/]+)?:?)\/{0,2})([^:]+)(?::(\d+))?/;
-    //                              ^proto             ^host/folder ^port
+  const element = document.currentScript;
 
-    if ((m = src.match(lrUrlRegexp)) && (mm = srcAttr.match(lrUrlRegexpAttr))) {
-      const [, , host, port, , params] = m;
-      const [, , , portFromAttr] = mm;
-      const options = new Options();
+  // eslint-disable-next-line no-var
+  var m;
+  // eslint-disable-next-line no-var
+  var mm;
+  const src = element.src;
+  const srcAttr = element.getAttribute('src');
+  const lrUrlRegexp = /^([^:]+:\/\/([^/:]+)(?::(\d+))?\/|\/\/|\/)?([^/].*\/)?z?livereload\.js(?:\?(.*))?$/;
+  //                   ^proto:// ^host       ^port     ^//  ^/   ^folder
+  const lrUrlRegexpAttr = /^(?:(?:([^:/]+)?:?)\/{0,2})([^:]+)(?::(\d+))?/;
+  //                              ^proto             ^host/folder ^port
 
-      options.https = element.src.indexOf('https') === 0;
+  if ((m = src.match(lrUrlRegexp)) && (mm = srcAttr.match(lrUrlRegexpAttr))) {
+    const [, , host, port, , params] = m;
+    const [, , , portFromAttr] = mm;
+    const options = new Options();
 
-      options.host = host;
-      options.port = port
-        ? parseInt(port, 10)
-        : portFromAttr
-          ? parseInt(portFromAttr, 10)
-          : options.port;
+    options.https = element.src.indexOf('https') === 0;
 
-      if (params) {
-        for (const pair of params.split('&')) {
-          // eslint-disable-next-line no-var
-          var keyAndValue;
+    options.host = host;
+    options.port = port
+      ? parseInt(port, 10)
+      : portFromAttr
+        ? parseInt(portFromAttr, 10)
+        : options.port;
 
-          if ((keyAndValue = pair.split('=')).length > 1) {
-            options.set(keyAndValue[0].replace(/-/g, '_'), keyAndValue.slice(1).join('='));
-          }
+    if (params) {
+      for (const pair of params.split('&')) {
+        // eslint-disable-next-line no-var
+        var keyAndValue;
+
+        if ((keyAndValue = pair.split('=')).length > 1) {
+          options.set(keyAndValue[0].replace(/-/g, '_'), keyAndValue.slice(1).join('='));
         }
       }
-
-      return options;
     }
+
+    return options;
   }
 
   return null;

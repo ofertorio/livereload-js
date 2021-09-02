@@ -139,7 +139,7 @@ class Reloader {
     this.window = window;
     this.console = console;
     this.Timer = Timer;
-    this.document = this.window.document;
+    this.document = document;
     this.importCacheWaitPeriod = 200;
     this.plugins = [];
   }

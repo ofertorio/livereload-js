@@ -6,20 +6,20 @@ const { Reloader } = require('./reloader');
 const { ProtocolError } = require('./protocol');
 
 class LiveReload {
-  constructor (window) {
-    this.window = window;
+  constructor () {
+    this.window = {};
     this.listeners = {};
     this.plugins = [];
     this.pluginIdentifiers = {};
 
     // i can haz console?
     this.console =
-      this.window.console && this.window.console.log && this.window.console.error
-        ? this.window.location.href.match(/LR-verbose/)
-          ? this.window.console
+      window.console && window.console.log && window.console.error
+        ? window.location.href.match(/LR-verbose/)
+          ? window.console
           : {
               log () {},
-              error: this.window.console.error.bind(this.window.console)
+              error: window.console.error.bind(window.console)
             }
         : {
             log () {},
@@ -27,7 +27,7 @@ class LiveReload {
           };
 
     // i can haz sockets?
-    if (!(this.WebSocket = this.window.WebSocket || this.window.MozWebSocket)) {
+    if (!(this.WebSocket = window.WebSocket || MozWebSocket)) {
       this.console.error('LiveReload disabled because the browser does not seem to support web sockets');
 
       return;
@@ -43,7 +43,7 @@ class LiveReload {
         this.options.set(k, v);
       }
     } else {
-      this.options = Options.extract(this.window.document);
+      this.options = Options.extract(document);
 
       if (!this.options) {
         this.console.error('LiveReload disabled because it could not find its own <SCRIPT> tag');
@@ -53,7 +53,7 @@ class LiveReload {
     }
 
     // i can haz reloader?
-    this.reloader = new Reloader(this.window, this.console, Timer);
+    this.reloader = new Reloader(window, this.console, Timer);
 
     // i can haz connection?
     this.connector = new Connector(this.options, this.WebSocket, Timer, {
@@ -170,7 +170,7 @@ class LiveReload {
     this.pluginIdentifiers[PluginClass.identifier] = true;
 
     const plugin = new PluginClass(
-      this.window,
+      window,
       {
         // expose internal objects for those who know what they're doing
         // (note that these are private APIs and subject to change at any time!)
@@ -229,7 +229,7 @@ class LiveReload {
     this.connector.sendCommand({
       command: 'info',
       plugins: pluginsData,
-      url: this.window.location.href
+      url: window.location.href
     });
   }
 };
